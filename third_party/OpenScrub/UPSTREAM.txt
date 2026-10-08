@@ -1,0 +1,4 @@
+Upstream: https://github.com/austinmabry/OpenScrub
+Commit  : a1395dd
+Date    : 2026-09-29
+Vendored files: openscrub.py, LICENSE, NOTICE, person_models.json, face_models.json, plate_models.json, requirements.txt

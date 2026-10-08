@@ -1,0 +1,57 @@
+{
+  "_comment": "Curated full-body person models for the 'person' category. These are SEGMENTATION models: the engine masks each person's exact body silhouette (MaskAnyone-style), not a bounding box. ONNX exports mirrored on Hugging Face; downloads are SHA-256 verified against the pinned hashes below (computed from the exact files validated during development). NOTE the AGPL-3.0 license on the YOLO-seg family: models are downloaded on demand and NEVER bundled with OpenScrub (same policy as the non-commercial SCRFD face model) - the license badge is shown in the model picker so users can make their own call.",
+  "models": [
+    {
+      "id": "yolo11n-seg-person",
+      "label": "YOLO11n-seg (silhouette masks - recommended)",
+      "license": "AGPL-3.0",
+      "family": "yolo-seg",
+      "input_size": 640,
+      "source_url": "https://huggingface.co/mantaur/yolo11n-seg",
+      "attribution": "Ultralytics YOLO11 segmentation (AGPL-3.0), standard ONNX export mirrored by mantaur on Hugging Face.",
+      "download_url": "https://huggingface.co/mantaur/yolo11n-seg/resolve/main/yolo11n-seg.onnx",
+      "sha256": "2a35e71f92bd9a5005b70581f841a3db84807bd0c9e6e8c66304483ba3a6cf5f",
+      "notes": "11 MB. Segments each person's exact body outline - only the silhouette is redacted, the background around them stays sharp. COCO-trained; OpenScrub keeps only the person class.",
+      "recommended": true
+    },
+    {
+      "id": "yolo11s-seg-person",
+      "label": "YOLO11s-seg (higher accuracy - ~2x slower)",
+      "license": "AGPL-3.0",
+      "family": "yolo-seg",
+      "input_size": 640,
+      "source_url": "https://huggingface.co/mobilint/YOLO11s-seg",
+      "attribution": "Ultralytics YOLO11 segmentation (AGPL-3.0), standard ONNX export mirrored by mobilint on Hugging Face.",
+      "download_url": "https://huggingface.co/mobilint/YOLO11s-seg/resolve/main/yolo11s-seg.onnx",
+      "sha256": "340a164246b60f73ce0640cd02aa543345964139399c247f34ef1c52a57b8afa",
+      "notes": "39 MB. Small-tier model (COCO mask mAP 37.8 vs 32.0 for the nano): finds small, distant and partly hidden people the nano model misses, at roughly 2x its inference cost. The 'Balanced' quality tier.",
+      "recommended": false
+    },
+    {
+      "id": "yolo11m-seg-person",
+      "label": "YOLO11m-seg (highest accuracy - ~3x slower)",
+      "license": "AGPL-3.0",
+      "family": "yolo-seg",
+      "input_size": 640,
+      "source_url": "https://huggingface.co/mobilint/YOLO11m-seg",
+      "attribution": "Ultralytics YOLO11 segmentation (AGPL-3.0), standard ONNX export mirrored by mobilint on Hugging Face.",
+      "download_url": "https://huggingface.co/mobilint/YOLO11m-seg/resolve/main/yolo11m-seg.onnx",
+      "sha256": "4de4022753f22266a80d361ae0a777a82be4d16286b68b1d9e1ba92b030d3c96",
+      "notes": "86 MB. Medium-tier model (COCO mask mAP 41.5): best recall on hard footage - crowds, occlusion, frame-edge subjects - at roughly 3x the nano's inference cost. The 'Accurate' quality tier; strongly recommended on a GPU.",
+      "recommended": false
+    },
+    {
+      "id": "yolov8n-seg-person",
+      "label": "YOLOv8n-seg (silhouette masks - alternative)",
+      "license": "AGPL-3.0",
+      "family": "yolo-seg",
+      "input_size": 640,
+      "source_url": "https://huggingface.co/mobilint/YOLOv8n-seg",
+      "attribution": "Ultralytics YOLOv8 segmentation (AGPL-3.0), ONNX export published by mobilint on Hugging Face.",
+      "download_url": "https://huggingface.co/mobilint/YOLOv8n-seg/resolve/main/yolov8n-seg.onnx",
+      "sha256": "cb1e689c548b3fa019691c9c1762f38a76276981ce75d31f6c5aae396dbff78b",
+      "notes": "14 MB. Same silhouette masking with the previous-generation architecture; use if YOLO11 gives odd results on your footage.",
+      "recommended": false
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>easy-video-prep · 视频剪辑工作流</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="logo">EVP</span>
+    <span class="t1">easy-video-prep</span>
+    <span class="t2">视频预处理工作流</span>
+  </div>
+  <div class="paths">
+    <label>素材</label><input id="rootInput" placeholder="素材根目录…" spellcheck="false"><button class="mini" id="btnRoot">浏览</button>
+    <label>输出</label><input id="outInput" placeholder="输出目录…" spellcheck="false"><button class="mini" id="btnOut">浏览</button>
+  </div>
+  <div class="cur">
+    <span class="lab">当前素材</span>
+    <span id="curName" class="curname">未选择</span>
+    <button class="mini" id="btnPick">挑一个视频</button>
+  </div>
+</header>
+
+<main>
+  <aside class="rail">
+    <div class="railtitle">工作流</div>
+    <div id="railList" class="raillist"></div>
+    <div class="railtitle mathead">素材 <span id="matCount">0</span></div>
+    <div id="matList" class="matlist"><div class="matempty">在上面填素材目录后按 Enter</div></div>
+    <div class="railfoot">
+      <button id="btnFlow" class="wide">★ 工作流编排</button>
+      <div class="hint" id="ffmpegHint"></div>
+    </div>
+  </aside>
+
+  <section class="mid">
+    <div class="pv">
+      <div class="pstage">
+        <video id="player" playsinline preload="metadata" muted></video>
+        <div class="pempty" id="pEmpty">← 先在下面选一个素材，或从左侧挑一个产物</div>
+        <div class="pbadge" id="pBadge"></div>
+        <label class="pvol" title="预览音量（不影响导出）">
+          <span>♪</span><input type="range" id="pvVol" min="0" max="1" step="0.05" value="1">
+        </label>
+        <div class="zoverlay" id="zOverlay" style="display:none"></div>
+        <div class="ztools" id="zTools" style="display:none">
+          <span class="zlab">框选区域</span>
+          <button class="tbtn zblur" data-zmode="blur">模糊这块</button>
+          <button class="tbtn zign" data-zmode="ignore">忽略这块</button>
+          <button class="tbtn" id="zDel" disabled>删除</button>
+          <button class="tbtn" id="zClear">清空</button>
+          <span class="zhint" id="zHint">在画面上拖拽画框 · 拖动可移动</span>
+        </div>
+        <div class="abswitch" id="abSwitch">
+          <button data-src="orig" class="on">原片</button>
+          <button data-src="fixed" id="abFixed">已导出</button>
+        </div>
+      </div>
+
+      <div class="tlwrap">
+        <div class="tltb">
+          <button class="tbtn" id="btnPlay" title="播放/暂停 (空格)">▶</button>
+          <button class="tbtn" id="btnPrevFrame" title="上一帧 (←)">◀|</button>
+          <button class="tbtn" id="btnNextFrame" title="下一帧 (→)">|▶</button>
+          <span class="tsep rangeonly"></span>
+          <button class="tbtn rangeonly" id="btnSetIn" title="设入点 (I)">入点</button>
+          <button class="tbtn rangeonly" id="btnSetOut" title="设出点 (O)">出点</button>
+          <button class="tbtn rangeonly" id="btnClearSel" title="清除选区 (Esc)">清除</button>
+          <span class="ro rangeonly"><i>IN</i><b id="roIn">--:--.--</b></span>
+          <span class="ro rangeonly"><i>OUT</i><b id="roOut">--:--.--</b></span>
+          <span class="ro rangeonly"><i>时长</i><b id="roDur">--:--.--</b></span>
+          <span class="spacer"></span>
+          <span class="clock" id="clock">00:00.00 / 00:00.00</span>
+          <button class="tbtn hl rangeonly" id="btnAddSeg" title="把选区写入当前阶段的参数 (Enter)">＋ 应用到参数</button>
+        </div>
+        <div class="tl" id="tl">
+          <div class="tlruler" id="tlRuler"></div>
+          <div class="tllane" id="tlLane">
+            <div class="tlstrip" id="tlStrip"></div>
+            <div class="tlsel" id="tlSel"><span class="hatch"></span></div>
+            <div class="tlhandle in" id="hIn" title="拖动设入点"><i></i></div>
+            <div class="tlhandle out" id="hOut" title="拖动设出点"><i></i></div>
+            <div class="tlph" id="playhead"><span></span></div>
+          </div>
+        </div>
+        <div class="tlfoot">
+          <span><kbd>空格</kbd>播放</span>
+          <span><kbd>←</kbd><kbd>→</kbd> 逐帧</span><span><kbd>⇧</kbd>+<kbd>←</kbd><kbd>→</kbd> 跳 1 秒</span>
+          <span class="rangeonly"><kbd>I</kbd>/<kbd>O</kbd> 入/出点</span>
+          <span class="rangeonly"><kbd>Enter</kbd> 应用到参数</span>
+          <span class="rangeonly"><kbd>Esc</kbd> 清除选区</span>
+          <span class="dim" id="metaHint"></span>
+        </div>
+      </div>
+    </div>
+    <div class="stage" id="stageView"></div>
+  </section>
+
+  <aside class="side">
+    <div class="sidetabs">
+      <button data-t="job" class="on">任务</button>
+      <button data-t="out">产物</button>
+    </div>
+    <div class="sidebody" id="jobPane">
+      <div class="progwrap"><div class="progbar"><i id="progFill"></i></div><span id="progText">空闲</span></div>
+      <div class="jobactions"><button class="mini" id="btnCancel" disabled>取消</button><button class="mini" id="btnClear">清空日志</button></div>
+      <pre id="logBox" class="log">—</pre>
+    </div>
+    <div class="sidebody hidden" id="outPane">
+      <div id="outList" class="outlist"><div class="empty">还没有产物</div></div>
+    </div>
+  </aside>
+</main>
+
+<div class="modal hidden" id="modal">
+  <div class="mbox">
+    <div class="mhead"><b id="mTitle">选择视频</b><button class="x" id="mClose">✕</button></div>
+    <div class="mpath"><button class="mini" id="mUp">↑ 上级</button><span id="mDir"></span></div>
+    <div class="mbody">
+      <div class="mdirs" id="mDirs"></div>
+      <div class="mfiles" id="mFiles"></div>
+    </div>
+    <div class="mfoot">
+      <span id="mSel" class="msel">已选 0 个</span>
+      <button class="mini" id="mOk">确定</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="/static/preview.js"></script>
+<script src="/static/charts.js"></script>
+<script src="/static/zones.js"></script>
+<script src="/static/shell.js"></script>
+</body>
+</html>

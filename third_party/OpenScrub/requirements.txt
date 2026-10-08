@@ -1,0 +1,11 @@
+opencv-python
+numpy
+onnxruntime
+rapidfuzz
+pytesseract
+pillow
+spacy
+flask
+pyyaml
+cryptography
+cheroot>=10.0

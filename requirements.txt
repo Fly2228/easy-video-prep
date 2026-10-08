@@ -1,0 +1,23 @@
+# easy-video-prep 运行时依赖
+#
+# 只有「打码」阶段需要这些（它内嵌了 OpenScrub 引擎）。
+# 其余四个阶段（曝光/剪辑/补帧/压缩）只依赖 ffmpeg / RIFE，不需要 Python 包。
+
+opencv-python>=4.8
+numpy>=1.23
+PyYAML>=6.0
+requests>=2.28
+Pillow>=9.5
+rapidfuzz>=3.0
+
+# 推理后端 —— 二选一：
+#   Windows + 任意 DirectX 12 显卡（NVIDIA/AMD/Intel）推荐 DirectML 版：
+#       pip install onnxruntime-directml
+#   其他平台 / 纯 CPU：
+#       pip install onnxruntime
+onnxruntime>=1.16
+
+# 以下只在你要启用「车牌」「文字」等类别时才需要（本项目把类别锁死为
+# person,face，所以默认用不上）：
+# pytesseract
+# spacy
